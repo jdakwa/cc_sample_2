@@ -24,6 +24,15 @@ const inter = Inter({
 export const metadata: Metadata = {
   title: 'Veridian Estates | Premier Luxury Real Estate',
   description: 'Discover exceptional luxury properties and estates with Veridian Estates',
+  icons: {
+    icon: [
+      { url: '/favicon.ico' },
+      { url: '/craftyFavicon.png', type: 'image/png', sizes: 'any' },
+    ],
+    apple: [
+      { url: '/craftyFavicon.png', sizes: '180x180', type: 'image/png' },
+    ],
+  },
 }
 
 export default function RootLayout({
