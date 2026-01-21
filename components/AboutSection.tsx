@@ -30,15 +30,15 @@ export default function AboutSection() {
             </div>
           </ScrollAnimation>
           <ScrollAnimation animationType="fade-in-right">
-            <div>
+            <div className="bg-white rounded-lg shadow-2xl p-8 md:p-12">
               <h2 className="font-display text-4xl md:text-5xl font-bold text-luxury-dark mb-6">
                 Excellence in Every Detail
               </h2>
-              <p className="text-lg text-gray-700 mb-6 leading-relaxed">
+              <p className="text-lg text-gray-700 mb-6 leading-relaxed font-extrabold">
               With over two decades of experience in luxury real estate, we have built a reputation 
               for delivering exceptional service and finding the perfect home for discerning clients.
             </p>
-            <p className="text-lg text-gray-700 mb-8 leading-relaxed">
+            <p className="text-lg text-gray-700 mb-8 leading-relaxed font-extrabold">
               Our team of dedicated professionals combines deep market knowledge with personalized 
               attention to ensure every transaction exceeds expectations. From historic estates to 
               contemporary masterpieces, we curate only the finest properties.

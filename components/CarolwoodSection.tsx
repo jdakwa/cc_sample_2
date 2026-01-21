@@ -44,9 +44,9 @@ export default function VeridianSection() {
         <div className="absolute inset-0 bg-black/60" />
       </div>
       
-      <div className="relative z-10 max-w-6xl mx-auto text-center">
+      <div className="relative z-10 max-w-6xl mx-auto">
         <ScrollAnimation animationType="fade-in-up" delay={200}>
-          <div className="mb-12">
+          <div className="mb-12 text-center">
             <h2 className="font-luxury text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-bold text-white mb-4 tracking-tight animate-fade-in-up stagger-1">
               Veridian Estates
             </h2>
@@ -54,13 +54,17 @@ export default function VeridianSection() {
           </div>
         </ScrollAnimation>
         <ScrollAnimation animationType="fade-in-up" delay={400}>
-          <p className="font-luxury text-xl md:text-2xl lg:text-3xl text-gray-100 leading-relaxed max-w-5xl mx-auto font-light tracking-wide animate-fade-in-up stagger-3">
-            Veridian Estates is a boutique brokerage based in Beverly Hills, founded by an organic 
-            collaboration of highly successful real estate professionals. Leveraging its stellar 
-            leadership and supported by the most refined resources in the industry, Veridian Estates 
-            is driven by an unrelenting focus on discretion, transactional excellence and exceeding 
-            client expectation.
-          </p>
+          <div className="space-y-24 max-w-5xl mx-auto animate-fade-in-up stagger-3 text-left">
+            <p className="font-luxury text-lg md:text-xl lg:text-2xl xl:text-3xl text-gray-100 leading-relaxed font-semibold tracking-wide">
+              Veridian Estates is a boutique brokerage based in Beverly Hills, founded by an organic 
+              collaboration of highly successful real estate professionals.
+            </p>
+            <p className="font-luxury text-lg md:text-xl lg:text-2xl xl:text-3xl text-gray-100 leading-relaxed font-semibold tracking-wide">
+              Leveraging its stellar leadership and supported by the most refined resources in the industry, 
+              Veridian Estates is driven by an unrelenting focus on discretion, transactional excellence 
+              and exceeding client expectation.
+            </p>
+          </div>
         </ScrollAnimation>
       </div>
     </section>
