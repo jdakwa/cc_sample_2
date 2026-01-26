@@ -1,5 +1,5 @@
 import type { Metadata } from 'next'
-import { Playfair_Display, Inter, Cormorant_Garamond } from 'next/font/google'
+import { Playfair_Display, Lato, Cormorant_Garamond } from 'next/font/google'
 import './globals.css'
 
 const playfair = Playfair_Display({
@@ -15,15 +15,16 @@ const cormorant = Cormorant_Garamond({
   display: 'swap',
 })
 
-const inter = Inter({
+const lato = Lato({
   subsets: ['latin'],
+  weight: ['300', '400', '700', '900'],
   variable: '--font-body',
   display: 'swap',
 })
 
 export const metadata: Metadata = {
-  title: 'Veridian Estates | Premier Luxury Real Estate',
-  description: 'Discover exceptional luxury properties and estates with Veridian Estates',
+  title: 'Veridian Realty Group | Premier Luxury Real Estate',
+  description: 'Discover exceptional luxury properties and estates with Veridian Realty Group',
   icons: {
     icon: [
       { url: '/favicon.ico' },
@@ -41,7 +42,7 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="en" className={`${playfair.variable} ${cormorant.variable} ${inter.variable}`}>
+    <html lang="en" className={`${playfair.variable} ${cormorant.variable} ${lato.variable}`}>
       <body className="font-body antialiased">{children}</body>
     </html>
   )

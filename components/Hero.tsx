@@ -1,118 +1,153 @@
 'use client'
 
-import Image from 'next/image'
-import { useState, useEffect } from 'react'
+import { useRef, useEffect, useState } from 'react'
+import Link from 'next/link'
+import useIntersectionObserver from '@/hooks/useIntersectionObserver'
 
-const heroImages = [
+const heroVideos = [
   {
-    url: 'https://images.unsplash.com/photo-1613490493576-7fde63acd811?w=1920&q=80',
-    title: 'Modern Luxury Living',
-    subtitle: 'Where elegance meets comfort',
+    src: '/hero-video.mp4',
   },
   {
-    url: 'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=1920&q=80',
-    title: 'Exceptional Estates',
-    subtitle: 'Discover your dream home',
+    src: '/hero-video-2.mp4',
   },
   {
-    url: 'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=1920&q=80',
-    title: 'Timeless Architecture',
-    subtitle: 'Crafted for perfection',
+    src: '/hero-video-3.mp4',
   },
 ]
 
 export default function Hero() {
+  const video1Ref = useRef<HTMLVideoElement>(null)
+  const video2Ref = useRef<HTMLVideoElement>(null)
   const [currentIndex, setCurrentIndex] = useState(0)
+  const [activeVideo, setActiveVideo] = useState(1) // 1 or 2
+  const { ref, isVisible } = useIntersectionObserver({ threshold: 0.1 })
+
+  const currentVideo = heroVideos[currentIndex]
+  const nextIndex = (currentIndex + 1) % heroVideos.length
+  const nextVideo = heroVideos[nextIndex]
 
   useEffect(() => {
-    const timer = setInterval(() => {
-      setCurrentIndex((prev) => (prev + 1) % heroImages.length)
-    }, 6000)
-    return () => clearInterval(timer)
+    // Initialize first video
+    const activeVideoRef = activeVideo === 1 ? video1Ref : video2Ref
+    if (activeVideoRef.current) {
+      activeVideoRef.current.src = currentVideo.src
+      activeVideoRef.current.load()
+      activeVideoRef.current.play().catch(() => {})
+    }
   }, [])
 
-  const goToPrevious = () => {
-    setCurrentIndex((prev) => (prev - 1 + heroImages.length) % heroImages.length)
-  }
+  useEffect(() => {
+    // Preload next video in the inactive element
+    const inactiveVideoRef = activeVideo === 1 ? video2Ref : video1Ref
+    if (inactiveVideoRef.current) {
+      inactiveVideoRef.current.src = nextVideo.src
+      inactiveVideoRef.current.load()
+    }
+  }, [currentIndex, activeVideo, nextVideo.src])
 
-  const goToNext = () => {
-    setCurrentIndex((prev) => (prev + 1) % heroImages.length)
+  const handleVideoEnd = () => {
+    const inactiveVideoRef = activeVideo === 1 ? video2Ref : video1Ref
+    const activeVideoRef = activeVideo === 1 ? video1Ref : video2Ref
+    
+    // Start playing next video (already preloaded) before switching
+    if (inactiveVideoRef.current) {
+      inactiveVideoRef.current.currentTime = 0
+      inactiveVideoRef.current.play().catch(() => {})
+      
+      // Wait a tiny bit to ensure video has started, then switch visibility
+      setTimeout(() => {
+        // Hide current video and show next
+        if (activeVideoRef.current) {
+          activeVideoRef.current.pause()
+        }
+        
+        // Switch active video and update index
+        setActiveVideo(activeVideo === 1 ? 2 : 1)
+        setCurrentIndex(nextIndex)
+      }, 50)
+    }
   }
-
-  const currentImage = heroImages[currentIndex]
 
   return (
-    <section className="relative h-screen flex items-center justify-center overflow-hidden">
-      {/* Background Image */}
+    <section ref={ref} className="relative h-screen flex items-center justify-center overflow-hidden">
+      {/* Fullscreen Video Background - Two videos for seamless transition */}
       <div className="absolute inset-0 z-0">
-        <Image
-          src={currentImage.url}
-          alt={currentImage.title}
-          fill
-          priority
-          className="object-cover"
-          quality={90}
-        />
-        <div className="absolute inset-0 bg-black/40" />
+        {/* Video 1 */}
+        <video
+          ref={video1Ref}
+          autoPlay
+          muted
+          playsInline
+          onEnded={activeVideo === 1 ? handleVideoEnd : undefined}
+          className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-1000 ease-in-out ${
+            activeVideo === 1 ? 'opacity-100 z-10' : 'opacity-0 z-0'
+          }`}
+        >
+          <source src={currentVideo.src} type="video/mp4" />
+        </video>
+        
+        {/* Video 2 */}
+        <video
+          ref={video2Ref}
+          muted
+          playsInline
+          onEnded={activeVideo === 2 ? handleVideoEnd : undefined}
+          className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-1000 ease-in-out ${
+            activeVideo === 2 ? 'opacity-100 z-10' : 'opacity-0 z-0'
+          }`}
+        >
+          <source src={nextVideo.src} type="video/mp4" />
+        </video>
+        
+        {/* Shadow overlay for text readability */}
+        <div className="absolute inset-0 bg-gradient-to-b from-black/50 via-black/40 to-black/60 z-20" />
       </div>
 
-      {/* Navigation Arrows */}
-      <button
-        onClick={goToPrevious}
-        className="absolute left-4 md:left-8 top-1/2 transform -translate-y-1/2 z-20 bg-white/20 backdrop-blur-sm hover:bg-white/30 text-white p-3 md:p-4 rounded-full transition-all duration-300 hover:scale-110 group"
-        aria-label="Previous image"
-      >
-        <svg className="w-6 h-6 md:w-8 md:h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-        </svg>
-      </button>
-      <button
-        onClick={goToNext}
-        className="absolute right-4 md:right-8 top-1/2 transform -translate-y-1/2 z-20 bg-white/20 backdrop-blur-sm hover:bg-white/30 text-white p-3 md:p-4 rounded-full transition-all duration-300 hover:scale-110 group"
-        aria-label="Next image"
-      >
-        <svg className="w-6 h-6 md:w-8 md:h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-        </svg>
-      </button>
-
-      {/* Content */}
-      <div className="relative z-10 text-center text-white px-4 max-w-4xl mx-auto">
-        <h1 className="font-display text-5xl md:text-7xl lg:text-8xl font-bold mb-6 animate-fade-in">
-          {currentImage.title}
-        </h1>
-        <p className="text-xl md:text-2xl mb-8 text-gray-200 animate-fade-in-up stagger-1">
-          {currentImage.subtitle}
+      {/* Content - Editorial Layout */}
+      <div className={`relative z-30 text-center text-white px-4 max-w-content mx-auto transition-all duration-luxury-slow ${
+        isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
+      }`}>
+        {/* Subheadline - Single, consistent subheading */}
+        <p className="font-display text-5xl md:text-7xl lg:text-8xl font-light mb-12 tracking-tight text-balance text-white">
+          Discover your dream home
         </p>
-        <div className="flex flex-col sm:flex-row gap-4 justify-center animate-fade-in-up stagger-2">
-          <button className="bg-luxury-gold text-white px-8 py-4 rounded-sm text-lg font-semibold hover:bg-opacity-90 transition-all transform hover:scale-105 hover:shadow-lg">
-            Explore Properties
-          </button>
-          <button className="bg-white/10 backdrop-blur-sm text-white px-8 py-4 rounded-sm text-lg font-semibold border-2 border-white hover:bg-white/20 transition-all hover:scale-105">
-            Learn More
-          </button>
+
+        {/* CTAs - Clear, prominent buttons */}
+        <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-8">
+          <Link 
+            href="/properties"
+            className="px-10 py-4 text-base tracking-wide uppercase bg-white text-luxury-text hover:bg-white/95 transition-all duration-luxury shadow-luxury-lg hover:shadow-luxury-hover font-medium"
+          >
+            View Properties
+          </Link>
+          <Link 
+            href="/contact"
+            className="px-10 py-4 text-base tracking-wide uppercase text-white border-2 border-white hover:bg-white hover:text-luxury-text transition-all duration-luxury font-medium"
+          >
+            Schedule Consultation
+          </Link>
+        </div>
+        
+        {/* Secondary CTA */}
+        <div className="text-center">
+          <Link 
+            href="/about"
+            className="text-sm tracking-wide uppercase text-white/80 hover:text-white transition-colors duration-luxury underline underline-offset-4"
+          >
+            Learn More About Us
+          </Link>
         </div>
       </div>
 
-      {/* Image Indicators */}
-      <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 z-10 flex gap-2">
-        {heroImages.map((_, index) => (
-          <button
-            key={index}
-            onClick={() => setCurrentIndex(index)}
-            className={`h-2 rounded-full transition-all ${
-              index === currentIndex ? 'w-8 bg-luxury-gold' : 'w-2 bg-white/50'
-            }`}
-            aria-label={`Go to slide ${index + 1}`}
-          />
-        ))}
-      </div>
-
-      {/* Scroll Indicator */}
-      <div className="absolute bottom-8 right-8 z-10 animate-bounce">
-        <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 14l-7 7m0 0l-7-7m7 7V3" />
-        </svg>
+      {/* Scroll Indicator - Refined */}
+      <div className="absolute bottom-8 right-8 z-30 animate-pulse">
+        <div className="flex flex-col items-center gap-2 text-white/60">
+          <span className="text-xs tracking-wider uppercase">Scroll</span>
+          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 13.5L12 21m0 0l-7.5-7.5M12 21V3" />
+          </svg>
+        </div>
       </div>
     </section>
   )

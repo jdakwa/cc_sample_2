@@ -3,21 +3,111 @@
 @tailwind utilities;
 
 :root {
+  /* Typography */
   --font-display: 'Playfair Display', serif;
-  --font-body: 'Inter', sans-serif;
+  --font-body: 'Lato', sans-serif;
   --font-luxury: 'Cormorant Garamond', serif;
-  /* To use Aurum Valore, uncomment and add your font files:
-  --font-luxury: 'Aurum Valore', serif;
-  */
+  
+  /* Luxury Design Tokens */
+  --color-bg: #FAFAF9;
+  --color-bg-off: #FFFFFF;
+  --color-text: #0A0A0A;
+  --color-text-muted: #6B6B6B;
+  --color-border: #E5E3DE;
+  --color-accent: #C9A961;
+  --color-accent-hover: #B8964F;
+  
+  /* Spacing */
+  --section-padding-y: 7rem;
+  
+  @media (max-width: 768px) {
+    --section-padding-y: 4rem;
+  }
+  
+  /* Typography Scale */
+  --text-xs: 0.75rem;
+  --text-sm: 0.875rem;
+  --text-base: 1rem;
+  --text-lg: 1.125rem;
+  --text-xl: 1.25rem;
+  --text-2xl: 1.5rem;
+  --text-3xl: 1.875rem;
+  --text-4xl: 2.25rem;
+  --text-5xl: 3rem;
+  --text-6xl: 3.75rem;
+  --text-7xl: 4.5rem;
+  --text-8xl: 6rem;
+  
+  /* Line Heights */
+  --leading-tight: 1.1;
+  --leading-snug: 1.25;
+  --leading-normal: 1.5;
+  --leading-relaxed: 1.625;
+  --leading-loose: 2;
+  
+  /* Shadows */
+  --shadow-luxury: 0 1px 3px 0 rgba(0, 0, 0, 0.04), 0 1px 2px 0 rgba(0, 0, 0, 0.02);
+  --shadow-luxury-hover: 0 20px 25px -5px rgba(0, 0, 0, 0.08), 0 10px 10px -5px rgba(0, 0, 0, 0.02);
+  
+  /* Transitions */
+  --transition-luxury: cubic-bezier(0.2, 0.8, 0.2, 1);
+  --duration-luxury: 320ms;
 }
 
 @layer base {
+  * {
+    @apply border-luxury-border;
+  }
+  
+  html {
+    scroll-behavior: smooth;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+  
   body {
-    @apply text-luxury-dark bg-white;
+    @apply bg-luxury-light text-luxury-text;
+    font-family: var(--font-body);
+    font-size: 1rem;
+    line-height: var(--leading-relaxed);
+    letter-spacing: -0.01em;
   }
   
   h1, h2, h3, h4, h5, h6 {
-    @apply font-display;
+    font-family: var(--font-display);
+    font-weight: 400;
+    line-height: var(--leading-tight);
+    letter-spacing: -0.02em;
+    @apply text-luxury-text;
+  }
+  
+  h1 {
+    font-size: clamp(2.5rem, 5vw, 4.5rem);
+    font-weight: 500;
+  }
+  
+  h2 {
+    font-size: clamp(2rem, 4vw, 3.5rem);
+    font-weight: 400;
+  }
+  
+  h3 {
+    font-size: clamp(1.5rem, 3vw, 2.25rem);
+  }
+  
+  p {
+    @apply text-luxury-text-muted;
+    line-height: var(--leading-relaxed);
+  }
+  
+  a {
+    @apply transition-all duration-luxury;
+    transition-timing-function: var(--transition-luxury);
+  }
+  
+  button {
+    @apply transition-all duration-luxury;
+    transition-timing-function: var(--transition-luxury);
   }
   
   .font-luxury {
@@ -57,22 +147,22 @@ html {
   scroll-behavior: smooth;
 }
 
-/* Custom scrollbar */
+/* Custom scrollbar - Refined */
 ::-webkit-scrollbar {
-  width: 10px;
+  width: 8px;
 }
 
 ::-webkit-scrollbar-track {
-  background: #f1f1f1;
+  background: var(--color-bg);
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #888;
-  border-radius: 5px;
+  background: var(--color-border);
+  border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #555;
+  background: var(--color-text-muted);
 }
 
 /* Animations */
@@ -309,9 +399,45 @@ html {
   animation: pulse-glow 2s infinite;
 }
 
+/* Luxury Button Styles */
+.btn-luxury {
+  @apply px-8 py-3.5 text-sm tracking-wide uppercase transition-all duration-luxury;
+  transition-timing-function: var(--transition-luxury);
+}
+
+.btn-luxury-primary {
+  @apply btn-luxury bg-luxury-text text-luxury-light hover:bg-luxury-charcoal shadow-luxury hover:shadow-luxury-md;
+}
+
+.btn-luxury-secondary {
+  @apply btn-luxury border border-luxury-border text-luxury-text hover:bg-luxury-text hover:text-luxury-light;
+}
+
+/* Section Styles */
+.section-padding {
+  padding-top: var(--section-padding-y);
+  padding-bottom: var(--section-padding-y);
+}
+
+/* Editorial Dividers */
+.divider-hairline {
+  @apply h-px bg-luxury-border;
+}
+
+/* Image Overlay - Cinematic */
+.image-overlay {
+  background: linear-gradient(to bottom, rgba(0,0,0,0.3), rgba(0,0,0,0.2), rgba(0,0,0,0.5));
+}
+
+/* Focus States - Accessible */
+*:focus-visible {
+  @apply outline-2 outline-offset-2 outline-luxury-gold;
+}
+
 /* Smooth transitions for all interactive elements */
 button, a, input, textarea {
-  transition: all 0.3s ease;
+  transition: all var(--duration-luxury);
+  transition-timing-function: var(--transition-luxury);
 }
 
 /* Gradient text animation */

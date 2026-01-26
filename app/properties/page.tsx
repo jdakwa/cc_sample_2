@@ -1,14 +1,16 @@
+'use client'
+
 import Image from 'next/image'
 import Link from 'next/link'
 import Navbar from '@/components/Navbar'
 import Footer from '@/components/Footer'
-import ScrollAnimation from '@/components/ScrollAnimation'
+import useIntersectionObserver from '@/hooks/useIntersectionObserver'
 
 const allProperties = [
   {
     id: 1,
     title: 'Modern Villa Estate',
-    location: 'Beverly Hills, CA',
+    location: 'Newport Beach, CA',
     price: '$8,500,000',
     bedrooms: 5,
     bathrooms: 6,
@@ -79,7 +81,7 @@ const allProperties = [
     bedrooms: 4,
     bathrooms: 5,
     sqft: '7,200',
-    image: 'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=800&q=80',
+    image: 'https://images.unsplash.com/photo-1600607687920-4e2a09cf159d?w=800&q=80',
     description: 'Modern desert home with stunning mountain views and resort-style pool.',
   },
   {
@@ -90,7 +92,7 @@ const allProperties = [
     bedrooms: 5,
     bathrooms: 6,
     sqft: '8,100',
-    image: 'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=800&q=80',
+    image: 'https://images.unsplash.com/photo-1600607687920-4e2a09cf159d?w=800&q=80',
     description: 'Spectacular coastal estate with ocean views and private beach access.',
   },
   {
@@ -106,12 +108,65 @@ const allProperties = [
   },
 ]
 
-export default function PropertiesPage() {
+function PropertyCard({ property, index }: { property: typeof allProperties[0], index: number }) {
+  const { ref, isVisible } = useIntersectionObserver({ threshold: 0.1 })
+
   return (
-    <main className="min-h-screen">
+    <Link
+      ref={ref as any}
+      href={`/properties/${property.id}`}
+      className={`group block transition-all duration-luxury-slow ${
+        isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
+      }`}
+      style={{ transitionDelay: `${index * 50}ms` }}
+    >
+      <div className="bg-luxury-light rounded-luxury overflow-hidden shadow-luxury hover:shadow-luxury-hover transition-all duration-luxury">
+        <div className="relative aspect-[4/5] overflow-hidden">
+          <Image
+            src={property.image}
+            alt={property.title}
+            fill
+            className="object-cover transition-transform duration-luxury-slow group-hover:scale-[1.02]"
+            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+          />
+          <div className="absolute top-4 right-4">
+            <div className="bg-luxury-text/90 backdrop-blur-sm text-luxury-light px-4 py-2 text-sm tracking-wide">
+              {property.price}
+            </div>
+          </div>
+        </div>
+        <div className="p-6 md:p-8">
+          <h3 className="font-display text-2xl md:text-3xl font-light text-luxury-text mb-2 tracking-tight group-hover:text-luxury-gold transition-colors duration-luxury">
+            {property.title}
+          </h3>
+          <p className="text-sm tracking-wide uppercase text-luxury-text-muted mb-2">
+            {property.location}
+          </p>
+          <p className="text-sm text-luxury-text-muted mb-6 leading-relaxed line-clamp-2">
+            {property.description}
+          </p>
+          <div className="flex items-center gap-6 text-xs tracking-wide text-luxury-text-muted border-t border-luxury-border pt-4">
+            <span>{property.bedrooms} Bed</span>
+            <span className="text-luxury-border">•</span>
+            <span>{property.bathrooms} Bath</span>
+            <span className="text-luxury-border">•</span>
+            <span>{property.sqft} sqft</span>
+          </div>
+        </div>
+      </div>
+    </Link>
+  )
+}
+
+export default function PropertiesPage() {
+  const { ref, isVisible } = useIntersectionObserver({ threshold: 0.1 })
+
+  return (
+    <main className="min-h-screen bg-luxury-light">
       <Navbar />
-      <div className="pt-20">
-        <section className="relative py-24 px-4 overflow-hidden">
+      <div>
+        {/* Hero Header */}
+        <section className="relative py-20 md:py-28 overflow-hidden">
           <div className="absolute inset-0 z-0">
             <Image
               src="https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=1920&q=80"
@@ -121,69 +176,26 @@ export default function PropertiesPage() {
               sizes="100vw"
               priority
             />
-            <div className="absolute inset-0 bg-black/50" />
+            <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-black/30 to-black/50" />
           </div>
-          <div className="relative z-10 max-w-7xl mx-auto text-center">
-            <ScrollAnimation animationType="fade-in-up">
-              <h1 className="font-display text-5xl md:text-6xl font-bold text-white mb-4">
-                All Properties
-              </h1>
-              <p className="text-lg text-gray-200 max-w-2xl mx-auto">
-                Explore our complete collection of luxury estates
-              </p>
-            </ScrollAnimation>
+          <div ref={ref as any} className={`relative z-10 max-w-container mx-auto px-6 md:px-8 lg:px-12 text-center transition-all duration-luxury-slow ${
+            isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'
+          }`}>
+            <h1 className="font-display text-5xl md:text-6xl lg:text-7xl font-light text-white mb-6 tracking-tight">
+              All Properties
+            </h1>
+            <p className="text-lg text-white/90 max-w-2xl mx-auto leading-relaxed">
+              Explore our complete collection of luxury estates
+            </p>
           </div>
         </section>
 
-        <section className="py-16 px-4 bg-white">
-          <div className="max-w-7xl mx-auto">
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        {/* Properties Grid */}
+        <section className="py-28 md:py-32 bg-luxury-light">
+          <div className="max-w-container mx-auto px-6 md:px-8 lg:px-12">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 lg:gap-10">
               {allProperties.map((property, index) => (
-                <ScrollAnimation
-                  key={property.id}
-                  animationType="scale-in"
-                  delay={index * 50}
-                >
-                  <Link
-                    href={`/properties/${property.id}`}
-                    className="group bg-white rounded-lg overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 block"
-                  >
-                  <div className="relative h-64 overflow-hidden">
-                    <Image
-                      src={property.image}
-                      alt={property.title}
-                      fill
-                      className="object-cover group-hover:scale-110 transition-transform duration-500"
-                      sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                    />
-                    <div className="absolute top-4 right-4 bg-luxury-gold text-white px-4 py-2 rounded-sm font-semibold">
-                      {property.price}
-                    </div>
-                  </div>
-                  <div className="p-6">
-                    <h3 className="font-display text-2xl font-bold text-luxury-dark mb-2 group-hover:text-luxury-gold transition-colors">
-                      {property.title}
-                    </h3>
-                    <p className="text-gray-600 mb-2">{property.location}</p>
-                    <p className="text-gray-500 text-sm mb-4 line-clamp-2">{property.description}</p>
-                    <div className="flex items-center gap-6 text-sm text-gray-500">
-                      <span className="flex items-center gap-1">
-                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
-                        </svg>
-                        {property.bedrooms} Beds
-                      </span>
-                      <span className="flex items-center gap-1">
-                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                        </svg>
-                        {property.bathrooms} Baths
-                      </span>
-                      <span>{property.sqft} sqft</span>
-                    </div>
-                  </div>
-                  </Link>
-                </ScrollAnimation>
+                <PropertyCard key={property.id} property={property} index={index} />
               ))}
             </div>
           </div>

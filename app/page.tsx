@@ -8,8 +8,11 @@ import Footer from '@/components/Footer'
 export default function Home() {
   return (
     <main className="min-h-screen">
-      <Navbar />
-      <Hero />
+      <div className="relative">
+        <Navbar />
+        <Hero />
+      </div>
+      <div className="py-10 bg-luxury-light"></div>
       <VeridianSection />
       <FeaturedProperties />
       <AboutSection />

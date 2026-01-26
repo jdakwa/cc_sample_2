@@ -1,0 +1,46 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum ResponseStatus {
+  INTERESTED
+  NOT_INTERESTED
+  NO_ANSWER
+  LEFT_VOICEMAIL
+  FOLLOW_UP_LATER
+  WRONG_NUMBER
+  DO_NOT_CONTACT
+}
+
+model Contact {
+  id            String          @id @default(cuid())
+  firstName     String
+  lastName      String?
+  email         String?
+  onlineProfile String?         @map("online_profile")
+  phoneNumber   String          @unique @map("phone_number")
+  company       String?
+  cityState     String?         @map("city_state")
+  hasWebsite    Boolean?        @default(false) @map("has_website")
+  websiteLink   String?         @map("website_link")
+  emailSent     Boolean         @default(false) @map("email_sent")
+  callMade      Boolean         @default(false) @map("call_made")
+  response      ResponseStatus?
+  nextStepNotes String?         @map("next_step_notes") @db.Text
+  lastContactedAt DateTime?    @map("last_contacted_at")
+  createdAt     DateTime       @default(now()) @map("created_at")
+  updatedAt     DateTime       @updatedAt @map("updated_at")
+
+  @@index([email, company])
+  @@index([phoneNumber])
+  @@index([updatedAt])
+  @@map("contacts")
+}

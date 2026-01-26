@@ -1,71 +1,68 @@
 'use client'
 
-import Image from 'next/image'
-import ScrollAnimation from './ScrollAnimation'
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useRef } from 'react'
+import useIntersectionObserver from '@/hooks/useIntersectionObserver'
 
 export default function VeridianSection() {
-  const [scrollY, setScrollY] = useState(0)
-  const sectionRef = useRef<HTMLElement>(null)
+  const videoRef = useRef<HTMLVideoElement>(null)
+  const { ref: contentRef, isVisible } = useIntersectionObserver({ threshold: 0.1 })
 
   useEffect(() => {
-    const handleScroll = () => {
-      if (sectionRef.current) {
-        const rect = sectionRef.current.getBoundingClientRect()
-        const scrolled = window.scrollY - rect.top
-        setScrollY(scrolled * 0.2)
-      }
+    // Auto-play video when component mounts
+    if (videoRef.current) {
+      videoRef.current.play().catch(() => {
+        // Auto-play might be blocked by browser, that's okay
+      })
     }
-
-    window.addEventListener('scroll', handleScroll, { passive: true })
-    handleScroll() // Initial call
-    return () => window.removeEventListener('scroll', handleScroll)
   }, [])
 
   return (
-    <section ref={sectionRef} className="relative py-72 px-4 overflow-hidden">
-      {/* Background Image with Parallax */}
+    <section className="relative overflow-hidden" style={{ paddingTop: 'calc(7rem * 2 + 20px)', paddingBottom: 'calc(7rem * 2 + 20px)' }}>
+      {/* Video Background - Full width and height of section */}
       <div className="absolute inset-0 z-0">
-        <div 
-          className="absolute inset-0 transition-transform duration-75 ease-out"
-          style={{
-            transform: `translateY(${scrollY}px) scale(1.05)`,
-          }}
+        <video
+          ref={videoRef}
+          autoPlay
+          loop
+          muted
+          playsInline
+          className="absolute inset-0 w-full h-full object-cover"
         >
-          <Image
-            src="https://images.unsplash.com/photo-1600585154084-4e5fe7c39198?w=1920&q=80"
-            alt="Luxury estate"
-            fill
-            className="object-cover scale-110"
-            sizes="100vw"
-            priority
-          />
-        </div>
-        <div className="absolute inset-0 bg-black/60" />
+          <source src="/veridian-section-video.mp4" type="video/mp4" />
+        </video>
       </div>
       
-      <div className="relative z-10 max-w-6xl mx-auto">
-        <ScrollAnimation animationType="fade-in-up" delay={200}>
-          <div className="mb-12 text-center">
-            <h2 className="font-luxury text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-bold text-white mb-4 tracking-tight animate-fade-in-up stagger-1">
-              Veridian Estates
-            </h2>
-            <div className="w-24 h-1 bg-luxury-gold mx-auto mb-8 animate-line-expand"></div>
+      {/* Centered White Box - Larger to fit all text */}
+      <div className="absolute inset-0 z-10 flex items-center justify-center">
+        <div className="w-3/5 h-3/5 bg-white relative shadow-luxury-lg">
+          {/* Content inside white box */}
+          <div ref={contentRef as any} className="relative z-10 h-full flex flex-col justify-center px-8 md:px-12 lg:px-16">
+            <div className={`text-left transition-all duration-luxury-slow ${
+              isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
+            }`}>
+              {/* Heading */}
+              <div className="mb-8">
+                <h2 className="font-luxury text-3xl md:text-4xl lg:text-5xl font-light text-luxury-text mb-4 tracking-tight">
+                  Veridian Realty Group
+                </h2>
+                <div className="w-16 h-px bg-luxury-gold mb-6"></div>
+              </div>
+
+              {/* Content - Two Paragraphs */}
+              <div className="space-y-6">
+                <p className="font-luxury text-base md:text-lg lg:text-xl text-luxury-text leading-relaxed font-light tracking-normal">
+                  Veridian Realty Group is a boutique brokerage based in Newport Beach, founded by an organic 
+                  collaboration of highly successful real estate professionals.
+                </p>
+                <p className="font-luxury text-base md:text-lg lg:text-xl text-luxury-text leading-relaxed font-light tracking-normal">
+                  Leveraging its stellar leadership and supported by the most refined resources in the industry, 
+                  Veridian Realty Group is driven by an unrelenting focus on discretion, transactional excellence 
+                  and exceeding client expectation.
+                </p>
+              </div>
+            </div>
           </div>
-        </ScrollAnimation>
-        <ScrollAnimation animationType="fade-in-up" delay={400}>
-          <div className="space-y-24 max-w-5xl mx-auto animate-fade-in-up stagger-3 text-left">
-            <p className="font-luxury text-lg md:text-xl lg:text-2xl xl:text-3xl text-gray-100 leading-relaxed font-semibold tracking-wide">
-              Veridian Estates is a boutique brokerage based in Beverly Hills, founded by an organic 
-              collaboration of highly successful real estate professionals.
-            </p>
-            <p className="font-luxury text-lg md:text-xl lg:text-2xl xl:text-3xl text-gray-100 leading-relaxed font-semibold tracking-wide">
-              Leveraging its stellar leadership and supported by the most refined resources in the industry, 
-              Veridian Estates is driven by an unrelenting focus on discretion, transactional excellence 
-              and exceeding client expectation.
-            </p>
-          </div>
-        </ScrollAnimation>
+        </div>
       </div>
     </section>
   )
